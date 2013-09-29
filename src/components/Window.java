@@ -1,7 +1,12 @@
 package components;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import utils.Properties;
 
 /**
@@ -16,13 +21,35 @@ public class Window extends JFrame implements Internationalizable {
 	private Window()
 	{
 		super();
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setIconImage((new ImageIcon("img/server-icon.png")).getImage());
-		setSize(500, 500);
-		setResizable(false);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setIconImage((new ImageIcon("img/light-on-icon.png")).getImage());
+		setSize(600, 500);
+		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
 		setTitle("JDomotic");
 		setDefaultLookAndFeelDecorated(true);
+		
+		addWindowListener(new WindowAdapter()
+		{
+
+			@Override
+			public void windowClosing(final WindowEvent winEvt)
+			{
+
+				final String[] options = {"Si", "No"};
+				final int selection = JOptionPane.showOptionDialog(
+				Window.getInstance(), "Si sales y vuelves a entrar todos los aparatos electrónicos se reiniciaran. ¿Estas seguro de querer salir?",
+				"Salir", JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE, new ImageIcon(
+				"img/warning.png"), options, options[1]);
+
+				if (selection == 0)
+				{
+					System.exit(0);
+				}
+			}
+				
+		});
 	}
 
 	/**

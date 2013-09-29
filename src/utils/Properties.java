@@ -94,16 +94,28 @@ public class Properties implements Serializable {
 		return properties.items;
 	}
 
-	public void setItems(Vector<Item> items) 
+	public static void deleteAllItems() 
 	{
 		if (properties == null)
 		{
 			init();
 		}
-		properties.items = items;
+		properties.items = new Vector<Item>();
 		properties.update();
 	}
 
+	public static void allOff()
+	{
+		if (properties == null)
+		{
+			init();
+		}
+		for(int i=0; i<properties.items.size(); i++)
+		{
+			properties.items.get(i).disconnect();
+		}
+	}
+	
 	/**
 	 * @return Current locale
 	 */
@@ -210,8 +222,10 @@ public class Properties implements Serializable {
 		}
 		
 		System.out.println("\nMODIFICACION DE DATOS");
-		//Properties.addItem(new Item("Luz Estudio", false, 0, 13));
-
+		//Properties.deleteAllItems();
+//		Properties.addItem(new Item("Luz Estudio", false, 0, 0));
+//		Properties.addItem(new Item("Luz Habitación", false, 0, 2));
+//		Properties.addItem(new Item("Luz Armario", false, 0, 4));
 		//Properties.setLookAndFeelClass("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
 
 	}

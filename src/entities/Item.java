@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.io.Serializable;
 import javax.swing.ImageIcon;
 
+import utils.Arduino;
+
 public class Item implements Serializable
 {
 	private static final long serialVersionUID = -8221614746128028892L;
@@ -71,15 +73,25 @@ public class Item implements Serializable
 	
 	public ImageIcon getImage()
 	{
-		ImageIcon tmpIcon;
 		ImageIcon imageIcon = null;
 		if(type == Item.light)
 		{
-			tmpIcon = new ImageIcon("img/light-icon.jpg"); 
-			imageIcon = new ImageIcon(tmpIcon.getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+			imageIcon = new ImageIcon("img/light-icon.png"); 
 		} else if(type == Item.fan) {
 			
 		}
 		return imageIcon;
+	}
+	
+	public void connect ()
+	{
+		Arduino.getInstance().sendData((arduinoPort+1)+"");
+		connected = true;
+	}
+	
+	public void disconnect ()
+	{
+		Arduino.getInstance().sendData(arduinoPort+"");
+		connected = false;
 	}
 }

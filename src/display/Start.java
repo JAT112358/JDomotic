@@ -2,12 +2,13 @@ package display;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import utils.Arduino;
 import utils.Lang;
 import utils.Properties;
 import components.IButton;
@@ -15,13 +16,15 @@ import components.Window;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.FlowLayout;
 
 /**
  * @author Jordan Aranda Tejada
@@ -32,9 +35,11 @@ public class Start extends JPanel implements ActionListener{
 	private static final long	serialVersionUID	= - 6855686055738953340L;
 
 	private IButton 	btnSettings;
+	private IButton		btnAllOff;
 	
 	public Start()
 	{
+		setBackground(Color.BLACK);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
 		gridBagLayout.rowHeights = new int[]{75, 0, 0};
@@ -43,18 +48,30 @@ public class Start extends JPanel implements ActionListener{
 		setLayout(gridBagLayout);
 		
 		JPanel panelMenu = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panelMenu.getLayout();
+		flowLayout.setHgap(10);
+		panelMenu.setOpaque(false);
 		GridBagConstraints gbc_panelMenu = new GridBagConstraints();
-		gbc_panelMenu.insets = new Insets(0, 0, 5, 0);
 		gbc_panelMenu.gridx = 0;
 		gbc_panelMenu.gridy = 0;
 		add(panelMenu, gbc_panelMenu);
 		
 		btnSettings = new IButton("Ajustes");
+		btnSettings.setFocusPainted(false);
 		btnSettings.setForeground(Color.BLACK);
 		btnSettings.setFont(new Font("Calibri", Font.PLAIN, 25));
 		btnSettings.addActionListener(this);
 		
+		btnAllOff = new IButton("Ajustes");
+		btnAllOff.addActionListener(this); 
+		btnAllOff.setText("Apagar todo");
+		btnAllOff.setForeground(Color.BLACK);
+		btnAllOff.setFont(new Font("Calibri", Font.PLAIN, 25));
+		btnAllOff.setFocusPainted(false);
+		panelMenu.add(btnAllOff);
+		
 		IButton btnAddItem = new IButton("Ajustes");
+		btnAddItem.setFocusPainted(false);
 		btnAddItem.setText("A\u00F1adir dispositivo");
 		btnAddItem.setForeground(Color.BLACK);
 		btnAddItem.setFont(new Font("Calibri", Font.PLAIN, 25));
@@ -62,16 +79,32 @@ public class Start extends JPanel implements ActionListener{
 		panelMenu.add(btnSettings);
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBackground(Color.BLACK);
+		scrollPane.setOpaque(false);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
-		JList listItems = new JList();
-		listItems.setForeground(Color.BLACK);
-		listItems.setFont(new Font("Calibri", Font.PLAIN, 20));
+		final JList<String> listItems = new JList<String>();
 		listItems.setOpaque(false);
+		listItems.addMouseListener(new MouseAdapter() 
+		{
+			public void mouseClicked(MouseEvent e) 
+			{
+				if(e.getClickCount() == 2)
+				{
+					Window.getInstance().setContentPane(new ItemPanel(listItems.getSelectedIndex()));
+					((JPanel) Window.getInstance().getContentPane()).updateUI();
+				}
+			}
+		});
+		
+		
+		
+		listItems.setForeground(Color.BLACK);
+		listItems.setFont(new Font("Calibri", Font.PLAIN, 25));
 		scrollPane.setViewportView(listItems);
 		
 		DefaultListModel modelo = new DefaultListModel();
@@ -114,6 +147,7 @@ public class Start extends JPanel implements ActionListener{
 				Window.getInstance().setContentPane(st);
 				Window.getInstance().setVisible(true);
 				SwingUtilities.updateComponentTreeUI(Window.getInstance());
+				Arduino.getInstance();
 			}
 		});
 	}
@@ -130,7 +164,7 @@ public class Start extends JPanel implements ActionListener{
 			final JDialog dialog = pane.createDialog("Ajustes del servidor");
 			dialog.setLocationRelativeTo(Window.getInstance());
 			dialog.setResizable(false);
-			dialog.pack();
+			dialog.setSize(500, 300);
 			dialog.setVisible(true);
 
 			if (pane.getValue() == options[0])
@@ -156,7 +190,10 @@ public class Start extends JPanel implements ActionListener{
 				SwingUtilities.updateComponentTreeUI(Window.getInstance());
 			}
 			dialog.dispose();
-		} 
+		} else if(e.getSource() == btnAllOff)
+		{
+			Properties.allOff();
+		}
 		
 	}
 }
